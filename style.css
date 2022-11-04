@@ -1,0 +1,37 @@
+@charset "utf-8";
+/* CSS Document */
+.contact-container{
+	padding: 20px;
+}
+.content p{
+	font-family: sans-serif;
+	font-size: 20px;
+}
+.title{
+	font-size: 35px;
+	padding: 20px;
+	text-align: center;
+	background-color: lightgrey;
+}
+.divider{
+	background-color: lightgrey;
+	width: 100%;
+	
+}
+.row{
+	padding: 20px;
+}
+.links{
+	list-style: none;
+	font-size: 30px;
+}
+.links li{
+	margin: 0 0 5px 0;
+}
+.form-container{
+	background-color: #F0F8FF;
+	max-width: 100%;
+}
+.error{
+    color: red;
+}
