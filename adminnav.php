@@ -55,7 +55,8 @@
       </ul>
 
       <?php
-      $name = $_COOKIE['name'];
+    session_start();
+      $name = $_SESSION['username'];
       echo "<div class='name'>";
       echo " <a class='nav-link disabled'>Hello, $name</a>";
       echo "</div>";

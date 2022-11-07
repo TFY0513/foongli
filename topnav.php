@@ -1,4 +1,4 @@
-<?php
+    <?php
 ob_start();
 
 ?>
@@ -105,6 +105,7 @@ ob_start();
       }
     </style>
  <?php 
+ session_start();
 $search="";
 if(isset($_POST['submit'])){ // sends keyword
     $search=$_POST['search'];      
@@ -152,32 +153,23 @@ if(isset($_POST['submit'])){ // sends keyword
         </li>
         
      <div class="dropDown">
-            <li class="nav-link dropdown-toggle">Login</li>
+            <li class="nav-link dropdown-toggle">Profile</li>
              <div class="dropdown-content">
-                 <?php
-                    if(isset($_COOKIE['username'])){
-                        $username = $_COOKIE['username'];
-                      
-                          echo "<a href='userLogOut.php?username=$username'>Log out</a>";
-                     }
-                       else{
-                         $username = "Guest";
-                          echo "<a href='memberlogin.php'>User Login</a>";
-                          echo "<a href='adminlogin.php'>Admin Login</a>";
-                     }
-                 ?>
+                  <a href='userLogOut.php'>Edit Profile </a>
+                 <a href='userLogOut.php'>Log Out</a>
+                
             </div> 
         </div>
      
       </ul>
-        <form class="form-inline mt-2 mt-md-0" method="post" section='<?php echo $_SERVER['PHP_SELF']?>'>
+<!--        <form class="form-inline mt-2 mt-md-0" method="post" section='<?php echo $_SERVER['PHP_SELF']?>'>
             
         <?php
-            echo "     <a class='nav-link disabled'   tabindex='-1'   >$username</a>";
+            echo "     <a class='nav-link disabled'   tabindex='-1'   >{$_SESSION["clientUsername"]}</a>";
         ?>
         <input class="form-control mr-sm-2" type="text" placeholder="Search" name="search" aria-label="Search">
         <button class="btn btn-outline-success my-2 my-sm-0" name="submit" type="submit">Search</button>
-      </form>
+      </form>-->
     </div>
   </nav>
 

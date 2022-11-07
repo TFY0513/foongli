@@ -15,10 +15,10 @@
   <link href="bs/bootstrap.min.css" rel="stylesheet">
   <?php
 session_start();
-//  if (!empty($_SESSION["error"])) {
-//    echo "<script type='text/javascript'>    alert('{$_SESSION["error"]}')</script>";
-//     unset($_SESSION['$_SESSION']);
-//  }
+  if (!empty($_SESSION["error"])) {
+    echo "<script type='text/javascript'>    alert('{$_SESSION["error"]}')</script>";
+     unset($_SESSION['$_SESSION']);
+  }
  
   ?>
   <style>
@@ -43,6 +43,7 @@ session_start();
 </head>
 
 <body>
+  
   <form action="adminvalidate.php" method="post" class="form-signin">
 
     <div class="text-center mb-4">

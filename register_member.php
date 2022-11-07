@@ -18,100 +18,154 @@
         <link href="bs/bootstrap.min.css" rel="stylesheet">
 
         <?php
+
         //Initialize variables
+        use PHPMailer\PHPMailer\PHPMailer;
+        use PHPMailer\PHPMailer\Exception;
+
+require 'phpmailer/src/Exception.php';
+        require 'phpmailer/src/PHPMailer.php';
+        require 'phpmailer/src/SMTP.php';
 
         session_start();
         $count = 1;
         $username = "";
-        $recoveryKey = "";
+        $name = "";
         $password = "";
-        $memberID = 0;
-        $invalid = 0;
-        $error = 0;
-        $msg = $usernameErr = $emailErr = $passwordErr = "";
+        $cPassword = "";
+        $email = "";
+        $gender = "";
+        $address = "";
+        $contactNum = "";
+
+        $error = false;
+        $nameErr = $emailErr = $passwordErr = $cPpasswordErr = $genderErr = $addressErr = $contactNumErr = "";
 
         if (isset($_POST['submit'])) {
 
-            $userdb = new mysqli('localhost', 'root', '', 'assignment');
-            if ($userdb->connect_error) {
-                die("Connection failed: " . $userdb->connect_error);
-            }
-            //generate member ID
-            $counting = "select * from member";
-            $result = $userdb->query($counting);
-            while ($row = $result->fetch_assoc()) {
-                $count++;
-            }
-            $memberID = "M" . $count;
-            $userdb->close();
+            include_once 'database.php';
 
-            if (empty($_POST['username'])) {    //not empty and does not contain symbol and numbers @ only alphabets
-                $invalid = 1;
-                $usernameErr = "Must enter user name !";
+            $username = $_POST['username'];
+
+            $name = $_POST['name'];
+            if (!preg_match("/^[a-z ,.'-]+$/i", $name)) {
+                $nameErr = "The name cannot contain symbol and numbers !";
+                $error = true;
+            }
+
+
+            $password = $_POST['password'];
+            if (strlen($password) < 8) {
+                $error = true;
+                $passwordErr = "password must have more than 8 length !";
             } else {
-                $username = $_POST['username'];
-                if (!preg_match("/^[a-z ,.'-]+$/i", $username)) {
-                    $usernameErr = "The user name cannot contain symbol and numbers!";
-                    $error = 1;
+                $cPassword = $_POST['cPassword'];
+                if ($cPassword != $password) {
+                    $error = true;
+                    $cPpasswordErr = "password and confirm password is not matched !";
                 }
             }
-            //password
-            if (empty($_POST['password'])) {
-                $invalid = 1;
-                $passwordErr = "password cannot be empty !";
-            } else {
-                $password = $_POST['password'];
-                if (strlen($password) < 8) {
-                    $error = 1;
-                    $passwordErr = "password must contain 8 digits or numbers";
-                }
+
+
+
+            $email = $_POST['email'];
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $emailErr = "email must follow the email format!";
+                $error = true;
             }
-            //recovery key
-            if (empty($_POST['recoveryKey'])) {
-                $invalid = 1;
-                $recoveryKeyErr = "Recovery Key cannot be empty !";
+
+
+            if (empty($_POST["gender"])) {
+                $genderErr = "Gender is required";
+                $error = true;
             } else {
-                $recoveryKey = $_POST['recoveryKey'];
-                if (strlen($recoveryKey) < 6) {
-                    $error = 1;
-                    $recoveryKeyErr = "Recovery Key must contain 6 digits!";
-                }
+                $gender = $_POST["gender"];
             }
-            //email
-            if (empty($_POST['email'])) {
-                $invalid = 1;
-                $emailErr = "email cannot be empty !";
-            } else {
-                $email = $_POST['email'];
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $emailErr = "email must follow the email format!";
-                    $error = 1;
-                }
+
+            $address = $_POST['address'];
+
+            $contactNum = $_POST['contactNum'];
+            if (!preg_match("/(\+?6?01)[0-46-9]-*[0-9]{7,8}$/i", $contactNum)) {
+                $contactNumErr = "The contact number must match with Malaysian mobile phone number !";
+                $error = true;
             }
+
+
+
+            $stmt = $database->prepare("select * from user_table where username=? ");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if (mysqli_num_rows($result) != 0) {
+                  
+                $error = true;
+                echo "<script type='text/javascript'>    alert('This usename is already exist !')</script>";
+            }
+
+            $stmt = $database->prepare("select * from user_table where email=? ");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+           if (mysqli_num_rows($result) != 0) {
+                $error = true;
+                echo "<script type='text/javascript'>    alert('This email is already exist !')</script>";
+            }
+
+
             //store into data base
-            if ($invalid == 0 && $error == 0) {
-                $userdb = new mysqli('localhost', 'root', '', 'assignment');
-                if ($userdb->connect_error) {
-                    die("Connection failed: " . $userdb->connect_error);
-                }
-                $select = "select * from member where username='$username' ";
-                $run = $userdb->query($select);
-                if (mysqli_num_rows($run) != 0) {
-                    echo "<script type='text/javascript'>    alert('Username already exist !')      "
-                    . "          </script>";
-                } else {
-                    $insert = "insert into member(memberID,username, password,email,recoveryKey,deleteAcc)Values('{$memberID}','{$username}', '{$password}','{$email}','{$recoveryKey}','No') ";
-                    $run = $userdb->query($insert);
+            if (!$error) {
 
-                    if ($run) {
-                        header("Location:index.php");
-                        echo "<script type='text/javascript'> alert('Member registred success !')</script>";
-                    } else {
-                        header("Location:index.php");
-                        echo "<script type='text/javascript'> alert('Failed to registered !')</script>";
+                $otp = rand(100000, 999999);
+
+                $mail = new PHPMailer(true);
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = "foongli123@gmail.com";
+                $mail->Password = "ojrdfrbhimgvewxh";
+                $mail->SMTPSecure = "ssl";
+                $mail->Port = 465;
+                $mail->setFrom("foongli123@gmail.com");
+                $mail->addAddress($email);
+                $mail->isHTML(true);
+                $mail->Subject = "Verification code";
+                $mail->Body = "$otp";
+
+                $mail->send();
+
+                $hashpassword = hash('sha512', $password);
+
+                $_SESSION["otp"] = $otp;
+
+//                $_SESSION["name"] = $name;
+//                $_SESSION["password"] = $hashpassword;
+//                $_SESSION["email"] = $email;
+//                $_SESSION["gender"] = $gender;
+//                $_SESSION["address"] = $address;
+//                $_SESSION["contactNum"] = $contactNum;
+
+                $stmt = $database->prepare("insert into user_table (username,password,email,contactNum,gender,address,name, verified)Values(?, ?, ?, ?, ?, ?, ?, 'no')");
+
+                $stmt->bind_param("sssssss", $username, $hashpassword, $email, $contactNum, $gender, $address, $name);
+
+                $stmt->execute();
+
+                $stmt->close();
+
+                $sql = "SELECT userID FROM user_table ORDER BY userID DESC LIMIT 1";
+                $result = mysqli_query($database, $sql);
+
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $_SESSION["userID"] = $row["userID"];
                     }
                 }
-                $userdb->close();
+
+                $database->close();
+
+                header("Location:verification.php");
             }
         }
         ?>
@@ -133,19 +187,13 @@
 
                             <input type="text" id="username" class="form-control" maxlength="50" placeholder="Enter username" name="username" value="" required autofocus>
                             <label for="username">Username</label>
-                            <span class="error"><?php
-                                echo $usernameErr;
-                                echo $msg
-                                ?></span>
+                            <span class="error"></span>
                         </div>
                         <div class="form-label-group">
 
-                            <input type="text" id="username" class="form-control" maxlength="50" placeholder="Enter name" name="username" value="" required autofocus>
+                            <input type="text" id="username" class="form-control" maxlength="50" placeholder="Enter name" name="name" value="" required autofocus>
                             <label for="username">Name</label>
-                            <span class="error"><?php
-                                echo $usernameErr;
-                                echo $msg
-                                ?></span>
+                            <span class="error"><?php echo $nameErr; ?></span>
                         </div>
                         <div class="form-label-group">
 
@@ -153,7 +201,12 @@
                             <label for="password">Password</label>
                             <span class="error"><?php echo $passwordErr ?></span>
                         </div>
+                        <div class="form-label-group">
 
+                            <input type="password" id="password" class="form-control" placeholder="Confirm password" name="cPassword" value="" required>
+                            <label for="password">Confirm Password</label>
+                            <span class="error"><?php echo $cPpasswordErr ?></span>
+                        </div>
                         <div class="form-label-group">
 
                             <input type="text" id="email" class="form-control" maxlength="50" placeholder="Enter email" name="email" value="" required>
@@ -165,23 +218,23 @@
 
                         <input type="radio" name="gender"  value="female"> Female
                         <input type="radio" name="gender" value="male"> Male
-                        <input type="radio" name="gender"  value="other"> Other  
-                        <span class="error"></span><br/>
+
+                        <span class="error"><?php echo $genderErr ?></span><br/>
                         <div class="form-label-group">
 
                             <input type="text" id="email" class="form-control" maxlength="100" placeholder="Enter address" name="address" value="" required>
                             <label for="email">Address</label>
-                            <span class="error"><?php echo $emailErr ?></span>
+                            <span class="error"><?php echo $addressErr ?></span>
                         </div>
                         <div class="form-label-group">
 
-                            <input type="text" id="email" class="form-control" maxlength="15" placeholder="Enter address" name="contactNum" value="" required>
+                            <input type="text" id="email" class="form-control" maxlength="15" placeholder="" name="contactNum" value="" required>
                             <label for="email">Contact Number</label>
-                            <span class="error"></span>
+                            <span class="error"><?php echo $contactNumErr ?></span>
                         </div>
 
                         <button class="btn btn-lg btn-primary " type="submit" name="submit">Register</button>
-
+                        <a href="memberlogin.php">Login</a>
                     </form>
                 </div>
             </div>

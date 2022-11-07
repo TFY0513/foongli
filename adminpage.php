@@ -54,9 +54,12 @@
                 <th>Total Sales<br>
             </tr>-->
             <?php
+            session_start();
+             include_once 'checkLogin.php';
             //--detect inactiivity--//
             include_once 'inactivityDetect.php';
-            ////////////////////////
+             include_once 'accessControl.php';
+            ////////////////////////    
            // echo "time is " . $_SESSION['time'];
             
 //            

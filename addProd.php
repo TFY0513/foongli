@@ -22,6 +22,8 @@
 </style>
 
 <?php
+session_start();
+include 'checkLogin.php';
 include 'inactivityDetect.php';
 include 'database.php';
 

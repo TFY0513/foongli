@@ -30,7 +30,10 @@
                 <tbody>
 
                     <?php
+                    
+                   
                     include 'inactivityDetect.php';
+                     include_once 'checkLogin.php';
                     include 'database.php';
                     include 'encryption.php';
 

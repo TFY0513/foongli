@@ -11,11 +11,11 @@ $password = filter_var($_POST["password"], FILTER_SANITIZE_STRING);
 $hashpassword = hash('sha512', $password);
 //-------------------//
 
-include_once 'database.php';
+include_once     'database.php';
 
 //echo "$username<br/>$hashpassword";
 //-----parameter bidniing on sql statement(prevent sql injecction)----------//
-$stmt = $database->prepare("select * from admin_table where password=? and username=?");
+$stmt = $database->prepare("select * from admin_table INNER JOIN role_table ON admin_table.roleID=role_table.roleID where password=? and username=? ");
 $stmt->bind_param("ss", $hashpassword, $username);
 //-------------------//
 
@@ -29,10 +29,10 @@ if ($result) {
         if ($row['password'] == $hashpassword && $row['username'] == $username) {
             //  echo $row['password'];
 
-            $found = true;
+            $found = true;  
             $_SESSION['time'] = time();
             $_SESSION['username'] = $username;
-
+            $_SESSION['role'] = $row['role'];
             setcookie('username', $username);
             header("Location: adminpage.php");
         }
@@ -40,7 +40,8 @@ if ($result) {
 }
 
 if (!$found) {
-    echo "<script type='text/javascript'>    alert('Invalid username or password!')</script>";
+    $_SESSION["error"]="Invalid username or password!";
+   
     header("Location: adminlogin.php");
 }
 
