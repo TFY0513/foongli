@@ -12,4 +12,5 @@ if (time() - $_SESSION['time'] > $minutes * 60) { //subtract new timestamp from 
 } else {
     $_SESSION['time'] = time(); //set new timestamp
 }
+echo time() - $_SESSION['time'];    
 ?>

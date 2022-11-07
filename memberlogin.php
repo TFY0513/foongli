@@ -1,4 +1,7 @@
 <!doctype html>
+<?php
+    session_start();
+?>
 <html lang="en">
 
     <head>
@@ -31,20 +34,16 @@
             }
         </style>
         <?php
-           
-       
         if (isset($_POST['submit'])) {  //if submit, post 
             $username = $_POST['username'];
             $password = $_POST['password'];
-          
-            
-            
+
             $hashpassword = hash('sha512', $password);
-            
+
             include_once 'database.php';
 
             $stmt = $database->prepare("select * from user_table where verified = 'yes' and username= ? and password = ?");
-            
+
             $stmt->bind_param("ss", $username, $hashpassword);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -53,16 +52,19 @@
                 $error = true;
                 echo "<script type='text/javascript'>    alert('Invalid username or password !')</script>";
             } else {
+
+                while ($row = mysqli_fetch_assoc($result)) {
+                   $_SESSION['userID'] = $row["userID"];
+                }
+           // echo $_SESSION['userID'];
                 $_SESSION['clientTime'] = time();
                 $_SESSION['clientUsername'] = $username;
-                
-                setcookie('clientUsername', $username);
-                 header("Location:index.php");
-            }
 
-        }
-        else{
-          
+                setcookie('clientUsername', $username);
+               header("Location:index.php");
+            }
+        } else {
+            
         }
         ?>
         <!-- Custom styles for this template -->

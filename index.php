@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 //Homepage/ Start of everything
 ?>
 <!DOCTYPE html>
@@ -26,8 +26,9 @@
 
 <body>
 	<?php
+        // session_start();
 	include 'topnav.php';
-       // include 'checkCustomerLogin.php';
+      //include 'checkCustomerLogin.php';
         
 	?>
 	<div class="header">

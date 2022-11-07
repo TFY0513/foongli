@@ -1,17 +1,11 @@
-<?php 
+<?php
+
 // remove from cary by running query based on the value passed
+session_start();
+$row = $_REQUEST['row'];
 
-   $username=$_REQUEST['Username'];
-   $ID=$_REQUEST['ID'];
+unset($_SESSION['cart'][$row]); // remove item at index 0
+$_SESSION['cart'] = array_values($_SESSION['cart']); // 'reindex' array
 
-  $db = new mysqli('localhost','root','', 'assignment');   
-            
-   if ($db->connect_error) {
-            die("Connection failed: " . $db->connect_error);
-   } 
-      $delete = "delete from shopcart where username='$username' AND ID = '$ID'";        
-      $check = $db->query($delete);
-   
-   header("Location: shopcart.php");
-   $db -> close();
+header("Location: shopcart.php");
 ?>
