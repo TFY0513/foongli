@@ -32,7 +32,7 @@ if ($result) {
             $found = true;
             $_SESSION['time'] = time();
             $_SESSION['username'] = $username;
-            
+
             setcookie('username', $username);
             header("Location: adminpage.php");
         }
@@ -40,8 +40,7 @@ if ($result) {
 }
 
 if (!$found) {
-
-    $_SESSION["error"] = "Invalid username or password!";
+    echo "<script type='text/javascript'>    alert('Invalid username or password!')</script>";
     header("Location: adminlogin.php");
 }
 

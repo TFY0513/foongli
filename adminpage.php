@@ -49,31 +49,31 @@
             </center>
         </div>
         <table style="width:100%">
-            <tr>
+<!--            <tr>
                 <th>Total Items Sold </th>
                 <th>Total Sales<br>
-            </tr>
+            </tr>-->
             <?php
             //--detect inactiivity--//
             include_once 'inactivityDetect.php';
             ////////////////////////
            // echo "time is " . $_SESSION['time'];
             
-            
-            $db = new mysqli('localhost', 'root', '', 'foongli');    //connect database and sums up the total items sold
-
-
-            $result = mysqli_query($db, "SELECT SUM(Quantity) AS Quantity FROM shopcart WHERE confirmOrder ='Yes'");
-            $row = mysqli_fetch_array($result);
-            $count = $row['Quantity'];
-
-            $db2 = new mysqli('localhost', 'root', '', 'foongli');   //connect database and display total sales
-
-            $price = mysqli_query($db2, "SELECT SUM(totalPrice) AS totalAmount FROM shopcart WHERE confirmOrder ='Yes'");
-            $ay = mysqli_fetch_array($price);
-            $totalAmount = $ay['totalAmount'];
-
-            echo "<tr><td>$count</td><td>RM $totalAmount</td></tr>";
+//            
+//            $db = new mysqli('localhost', 'root', '', 'foongli');    //connect database and sums up the total items sold
+//
+//
+//            $result = mysqli_query($db, "SELECT SUM(Quantity) AS Quantity FROM shopcart WHERE confirmOrder ='Yes'");
+//            $row = mysqli_fetch_array($result);
+//            $count = $row['Quantity'];
+//
+//            $db2 = new mysqli('localhost', 'root', '', 'foongli');   //connect database and display total sales
+//
+//            $price = mysqli_query($db2, "SELECT SUM(totalPrice) AS totalAmount FROM shopcart WHERE confirmOrder ='Yes'");
+//            $ay = mysqli_fetch_array($price);
+//            $totalAmount = $ay['totalAmount'];
+//
+//            echo "<tr><td>$count</td><td>RM $totalAmount</td></tr>";
             ?>
         </table>
     </body>
